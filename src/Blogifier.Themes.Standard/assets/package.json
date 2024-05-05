@@ -10,6 +10,9 @@
     "build:Debug": "gulp build",
     "build:Release": "gulp release build"
   },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "dependencies": {
     "bootstrap": "~5.1.0",
     "highlight.js": "^11.8.0"
