@@ -41,24 +41,17 @@ jobs:
     - name: Publish Blogifier
       run: dotnet publish -c Release /p:RuntimeIdentifier=linux-x64 ./src/Blogifier/Blogifier.csproj --output dist
 
-    - name: Build And Deploy
-      id: builddeploy
-      uses: Azure/static-web-apps-deploy@v1
+    - name: Login to Azure
+      uses: azure/login@v1
       with:
-        azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PROUD_WATER_027BBC910 }}
-        repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
-        action: "upload"
-        ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-        # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-        app_location: "" # App source code path
-        api_location: "" # Api source code path - optional
-        output_location: "/dist" # Built app content directory - optional
-        ###### End of Repository/Build Configurations ######
-    #- name: Add .nojekyll file
-    #  run: touch dist/.nojekyll
+        client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A785729E2D9C4AEEB301C1E51FC8F60D }}
+        tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6D4DC756BB504CA88D265BFAE04329A6 }}
+        subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_AA08A11F1EAD4F70BE19EEE0FD7A9E63 }}
 
-    #- name: Deploy
-    #  uses: JamesIves/github-pages-deploy-action@4.1.4
-    #  with:
-    #    branch: demo
-    #    folder: release
+    - name: 'Deploy to Azure Web App'
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'alanwilsoninfo'
+        slot-name: 'Production'
+        package: ./dist
