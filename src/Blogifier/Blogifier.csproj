@@ -12,6 +12,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="assets\package-lock.json" />
+    <Content Remove="assets\package.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="assets\package-lock.json" />
+    <None Include="assets\package.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.10" />
