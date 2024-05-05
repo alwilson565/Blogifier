@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy Node.js app to Azure Web App - alanwilsoninfo
 
 on:
@@ -9,47 +12,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      - uses: actions/checkout@v4
 
-    - name: Checkout
-      uses: actions/checkout@v2.3.1
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
 
-    - name: Get npm cache directory
-      id: npm-cache-dir
-      shell: bash
-      run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
 
-    - uses: actions/cache@v3
-      id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
-      with:
-        path: ${{ steps.npm-cache-dir.outputs.dir }}
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
 
-    - uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-            ${{ runner.os }}-nuget-
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
-
-    - name: Publish Blogifier
-      run: dotnet publish -c Release /p:RuntimeIdentifier=linux-x64 ./src/Blogifier/Blogifier.csproj --output dist
-      
-    - name: Zip artifact for deployment
-      run: zip release.zip ./dist -r
-
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v3
-      with:
-        name: node-app
-        path: release.zip
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: node-app
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -68,7 +53,7 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-
+      
       - name: Login to Azure
         uses: azure/login@v1
         with:
@@ -82,6 +67,5 @@ jobs:
         with:
           app-name: 'alanwilsoninfo'
           slot-name: 'Production'
-          package: ./dist
-
-
+          package: .
+          
